@@ -22,6 +22,13 @@ class PaymentController {
     await this.paymentService.handleIPN(req.query);
     res.json({ message: "OK" });
   };
+
+  // [GET] /api/v1/payments/:ref
+  getStatus = async (req, res) => {
+    const payment = await this.paymentService.getPaymentStatus(req.params.ref);
+    res.json(payment);
+  };
+
 };
 
 module.exports = PaymentController;

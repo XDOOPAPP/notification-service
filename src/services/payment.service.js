@@ -51,6 +51,12 @@ class PaymentService {
       });
     }
   }
+
+  async getPaymentStatus(paymentRef) {
+    const payment = await paymentRepo.findByRef(paymentRef);
+    if (!payment) throw new AppError("Payment not found", 404);
+    return payment;
+  }
 }
 
 module.exports = PaymentService;
