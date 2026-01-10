@@ -7,6 +7,9 @@ module.exports = (app) => {
   const bus = app.get("eventBus");
   const controller = new notifyController(bus);
 
+  router.get("/", auth, asyncHandler(controller.getAll));
+
+
 
   return router;
 }

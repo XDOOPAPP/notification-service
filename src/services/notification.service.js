@@ -5,6 +5,19 @@ class NotifyService {
   constructor(eventBus) {
     this.eventBus = eventBus;
   }
+
+  getUserNotifications(userId, query) {
+    const filters = {};
+    if (query.unreadOnly === "true") filters.isRead = false;
+
+    const page = Number(query.page || 1);
+    const limit = Number(query.limit || 10);
+
+    return NotifyRepo.findByUser(userId, filters, {
+      skip: (page - 1) * limit,
+      limit,
+    });
+  }
  // ================= PRIVATE METHODS =================
 
 }
