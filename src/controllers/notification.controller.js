@@ -36,7 +36,12 @@ class NotifyController {
     res.sendStatus(204);
   };
 
-
+  // [DELETE] /api/v1/notifications
+  deleteAll = async (req, res) => {
+    await this.notifyService.deleteAll(req.user.userId);
+    res.sendStatus(204);
+  };
+  
 };
 
 module.exports = NotifyController;

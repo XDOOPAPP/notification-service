@@ -17,5 +17,7 @@ module.exports = (app) => {
 
   router.delete("/:id", auth, asyncHandler(controller.deleteOne));
 
+  router.delete("/", auth, asyncHandler(controller.deleteAll));
+
   return router;
 }
