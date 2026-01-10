@@ -23,6 +23,14 @@ class NotifyController {
     await this.notifyService.markRead(req.params.id, req.user.userId);
     res.sendStatus(204);
   };
+
+  // [POST] /api/v1/notifications/read-all
+  markAllRead = async (req, res) => {
+    await this.notifyService.markAllRead("user123");
+    res.sendStatus(204);
+  };
+
+
 };
 
 module.exports = NotifyController;

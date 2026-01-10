@@ -13,5 +13,7 @@ module.exports = (app) => {
 
   router.post("/:id/read", auth, asyncHandler(controller.markRead));
 
+  router.post("/read-all", auth, asyncHandler(controller.markAllRead));
+
   return router;
 }

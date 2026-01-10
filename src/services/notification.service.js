@@ -28,6 +28,11 @@ class NotifyService {
   }
 
 
+  markAllRead(userId) {
+    return NotifyRepo.markAllRead(userId);
+  }
+
+
  // ================= PRIVATE METHODS =================
 
 }
