@@ -18,6 +18,10 @@ class NotifyService {
       limit,
     });
   }
+
+  countUnread(userId) {
+    return NotifyRepo.countUnread(userId);
+  }
  // ================= PRIVATE METHODS =================
 
 }

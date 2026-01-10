@@ -9,6 +9,7 @@ module.exports = (app) => {
 
   router.get("/", auth, asyncHandler(controller.getAll));
 
+  router.get("/unread-count", auth, asyncHandler(controller.getUnreadCount));
 
 
   return router;
