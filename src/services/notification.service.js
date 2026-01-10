@@ -22,6 +22,12 @@ class NotifyService {
   countUnread(userId) {
     return NotifyRepo.countUnread(userId);
   }
+
+  markRead(id, userId) {
+    return NotifyRepo.markRead(id, userId);
+  }
+
+
  // ================= PRIVATE METHODS =================
 
 }

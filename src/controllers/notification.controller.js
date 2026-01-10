@@ -17,6 +17,12 @@ class NotifyController {
     const count = await this.notifyService.countUnread(req.user.userId);
     res.json({ count });
   };
+
+  // [POST] /api/v1/notifications/:id/read
+  markRead = async (req, res) => {
+    await this.notifyService.markRead(req.params.id, req.user.userId);
+    res.sendStatus(204);
+  };
 };
 
 module.exports = NotifyController;

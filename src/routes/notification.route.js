@@ -11,6 +11,7 @@ module.exports = (app) => {
 
   router.get("/unread-count", auth, asyncHandler(controller.getUnreadCount));
 
+  router.post("/:id/read", auth, asyncHandler(controller.markRead));
 
   return router;
 }
