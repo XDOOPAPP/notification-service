@@ -87,6 +87,12 @@ class NotifyService {
           payload: adminPayload
         });
 
+        await NotifyRepo.create({
+          userId: 'admins',
+          ...adminPayload,
+          isRead: false
+        });
+
         console.log(`✅ USER_CREATED notification sent to user:${userId} and admins`);
       } catch (err) {
         console.error("❌ Error sending USER_CREATED notification:", err);
@@ -163,6 +169,12 @@ class NotifyService {
         this.eventBus.publish('notification.send', {
           target: 'ADMINS',
           payload: adminPayload
+        });
+
+        await NotifyRepo.create({
+          userId: 'admins',
+          ...adminPayload,
+          isRead: false
         });
 
         console.log(`✅ PAYMENT_FAILED notification sent to user:${userId} and admins`);
