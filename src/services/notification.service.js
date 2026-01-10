@@ -46,38 +46,44 @@ class NotifyService {
     return notification;
   }
 
-  getUserNotifications(userId, query) {
+  getUserNotifications(userId, query, role) {
     const filters = {};
     if (query.unreadOnly === "true") filters.isRead = false;
 
     const page = Number(query.page || 1);
     const limit = Number(query.limit || 10);
-
+    
+    if (role === "ADMIN") {
+      return NotifyRepo.findByAdmin(filters, {
+        skip: (page - 1) * limit,
+        limit,
+      });
+    } 
     return NotifyRepo.findByUser(userId, filters, {
       skip: (page - 1) * limit,
       limit,
     });
   }
 
-  countUnread(userId) {
-    return NotifyRepo.countUnread(userId);
+  countUnread(userId, role) {
+    return NotifyRepo.countUnread(userId, role === "ADMIN"? true : false);
   }
 
-  markRead(id, userId) {
-    return NotifyRepo.markRead(id, userId);
+  markRead(id, userId, role) {
+    return NotifyRepo.markRead(id, userId, role === "ADMIN"? true : false);
   }
 
 
-  markAllRead(userId) {
-    return NotifyRepo.markAllRead(userId);
+  markAllRead(userId, role) {
+    return NotifyRepo.markAllRead(userId, role === "ADMIN"? true : false);
   }
 
-  deleteOne(id, userId) {
-    return NotifyRepo.deleteOne(id, userId);
+  deleteOne(id, userId, role) {
+    return NotifyRepo.deleteOne(id, userId, role === "ADMIN"? true : false);
   }
 
-  deleteAll(userId) {
-    return NotifyRepo.deleteAll(userId);
+  deleteAll(userId, role) {
+    return NotifyRepo.deleteAll(userId, role === "ADMIN"? true : false);
   }
 
 
