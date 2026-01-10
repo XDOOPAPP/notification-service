@@ -6,6 +6,7 @@ class NotifyService {
     this.eventBus = eventBus;
     this._listenUserCreatedEvents();
     this._listenPaymentEvents();
+    this._listenSubscriptionExpired();
   }
 
   getUserNotifications(userId, query) {
@@ -180,6 +181,39 @@ class NotifyService {
         console.log(`✅ PAYMENT_FAILED notification sent to user:${userId} and admins`);
       } catch (err) {
         console.error("❌ Error sending PAYMENT_FAILED notification:", err);
+      }
+    });
+  }
+
+  _listenSubscriptionExpired() {
+    if (!this.eventBus) return;
+    // Event SUBSCRIPTION_EXPIRED
+    this.eventBus.subscribe("SUBSCRIPTION_EXPIRED", async (payload) => {
+      try {
+        const { userId, planName, endDate } = payload;
+
+        const notificationPayload = {
+          title: "Gói đăng ký hết hạn",
+          message: `Gói ${planName} của bạn đã hết hạn vào ${endDate}`,
+          type: "SUBSCRIPTION_EXPIRED",
+          timestamp: new Date().toISOString()
+        };
+
+        await NotifyRepo.create({
+          userId,
+          ...notificationPayload,
+          isRead: false
+        });
+
+        this.eventBus.publish('notification.send', {
+          target: 'USER',
+          userId,
+          payload: notificationPayload
+        });
+
+        console.log(`✅ SUBSCRIPTION_EXPIRED notification sent to user:${userId}`);
+      } catch (err) {
+        console.error("❌ Error sending SUBSCRIPTION_EXPIRED notification:", err);
       }
     });
   }
