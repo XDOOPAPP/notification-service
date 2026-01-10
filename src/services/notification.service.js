@@ -5,6 +5,7 @@ class NotifyService {
   constructor(eventBus) {
     this.eventBus = eventBus;
     this._listenUserCreatedEvents();
+    this._listenPaymentEvents();
   }
 
   getUserNotifications(userId, query) {
@@ -89,6 +90,84 @@ class NotifyService {
         console.log(`✅ USER_CREATED notification sent to user:${userId} and admins`);
       } catch (err) {
         console.error("❌ Error sending USER_CREATED notification:", err);
+      }
+    });
+  }
+
+  _listenPaymentEvents() {
+    if (!this.eventBus) return;
+
+    // Event PAYMENT_SUCCESS 
+    this.eventBus.subscribe("PAYMENT_SUCCESS", async (payload) => {
+      try {
+        const { userId, paymentRef } = payload;
+        if (!userId) return;
+
+        const notificationPayload = {
+          title: "Thanh toán thành công",
+          message: `Thanh toán #${paymentRef} của bạn đã thành công.`,
+          type: "PAYMENT_SUCCESS",
+          timestamp: new Date().toISOString()
+        };
+
+        this.eventBus.publish('notification.send', {
+          target: 'USER',
+          userId,
+          payload: notificationPayload
+        });
+
+        await NotifyRepo.create({
+          userId,
+          ...notificationPayload,
+          isRead: false
+        });
+
+        console.log(`✅ PAYMENT_SUCCESS notification sent to user:${userId} and admins`);
+      } catch (err) {
+        console.error("❌ Error sending PAYMENT_SUCCESS notification:", err);
+      }
+    });
+
+    // Event PAYMENT_FAILED
+    this.eventBus.subscribe("PAYMENT_FAILED", async (payload) => {
+      try {
+        const { userId, paymentRef } = payload;
+        if (!userId) return;
+
+        const notificationPayload = {
+          title: "Thanh toán thất bại",
+          message: `Thanh toán #${paymentRef} của bạn đã thất bại.`,
+          type: "PAYMENT_FAILED",
+          timestamp: new Date().toISOString()
+        };
+
+        this.eventBus.publish('notification.send', {
+          target: 'USER',
+          userId,
+          payload: notificationPayload
+        });
+
+        await NotifyRepo.create({
+          userId,
+          ...notificationPayload,
+          isRead: false
+        });
+
+        const adminPayload = {
+          title: "Thanh toán thất bại",
+          message: `Người dùng #${userId} thanh toán thất bại (ref: ${paymentRef}).`,
+          type: "PAYMENT_FAILED",
+          timestamp: new Date().toISOString()
+        };
+
+        this.eventBus.publish('notification.send', {
+          target: 'ADMINS',
+          payload: adminPayload
+        });
+
+        console.log(`✅ PAYMENT_FAILED notification sent to user:${userId} and admins`);
+      } catch (err) {
+        console.error("❌ Error sending PAYMENT_FAILED notification:", err);
       }
     });
   }
