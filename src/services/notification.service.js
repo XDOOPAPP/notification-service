@@ -4,6 +4,7 @@ const AppError = require("../utils/appError");
 class NotifyService {
   constructor(eventBus) {
     this.eventBus = eventBus;
+    this._listenUserCreatedEvents();
   }
 
   getUserNotifications(userId, query) {
@@ -42,6 +43,55 @@ class NotifyService {
 
 
  // ================= PRIVATE METHODS =================
+
+  _listenUserCreatedEvents() {
+    if (!this.eventBus) return;
+
+    // Event USER_CREATED
+    this.eventBus.subscribe("USER_CREATED", async (payload) => {
+      try {
+        const { userId, fullName} = payload;
+
+        if (!userId) return;
+
+        const notificationPayload = {
+          title: "Chào mừng!",
+          message: `Chào mừng ${fullName || "người dùng"} đã đăng ký.`,
+          type: "USER_CREATED",
+          timestamp: new Date().toISOString()
+        };
+
+        this.eventBus.publish('notification.send', {
+          target: 'USER',
+          userId: userId,
+          payload: notificationPayload
+        });
+
+        await NotifyRepo.create({
+          userId,
+          ...notificationPayload,
+          isRead: false
+        });
+
+        const adminPayload = {
+          title: "Người dùng mới",
+          message: `${fullName || "Người dùng"} vừa đăng ký.`,
+          type: "USER_CREATED",
+          timestamp: new Date().toISOString()
+        };
+
+        this.eventBus.publish('notification.send', {
+          target: 'ADMINS',
+          userId: userId,
+          payload: adminPayload
+        });
+
+        console.log(`✅ USER_CREATED notification sent to user:${userId} and admins`);
+      } catch (err) {
+        console.error("❌ Error sending USER_CREATED notification:", err);
+      }
+    });
+  }
 
 }
 
