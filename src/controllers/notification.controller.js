@@ -26,7 +26,13 @@ class NotifyController {
 
   // [POST] /api/v1/notifications/read-all
   markAllRead = async (req, res) => {
-    await this.notifyService.markAllRead("user123");
+    await this.notifyService.markAllRead(req.user.userId);
+    res.sendStatus(204);
+  };
+
+  // [DELETE] /api/v1/notifications/:id
+  deleteOne = async (req, res) => {
+    await this.notifyService.deleteOne(req.params.id, req.user.userId);
     res.sendStatus(204);
   };
 

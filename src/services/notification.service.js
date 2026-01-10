@@ -32,6 +32,10 @@ class NotifyService {
     return NotifyRepo.markAllRead(userId);
   }
 
+  deleteOne(id, userId) {
+    return NotifyRepo.deleteOne(id, userId);
+  }
+
 
  // ================= PRIVATE METHODS =================
 

@@ -15,5 +15,7 @@ module.exports = (app) => {
 
   router.post("/read-all", auth, asyncHandler(controller.markAllRead));
 
+  router.delete("/:id", auth, asyncHandler(controller.deleteOne));
+
   return router;
 }
