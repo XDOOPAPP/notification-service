@@ -9,6 +9,43 @@ class NotifyService {
     this._listenSubscriptionExpired();
   }
 
+  async createNotification(data) {
+    const { userId, title, message, type, target } = data;
+
+    const allowedTargets = ["USER", "ADMINS", "ALL"];
+    if (!title || !message || !target) {
+      throw new AppError("title, message, target are required", 400);
+    }
+    if (!allowedTargets.includes(target)) {
+      throw new AppError("Invalid target", 400);
+    }
+    if (target === "USER" && !userId) {
+      throw new AppError("userId is required when target = USER", 400);
+    }
+
+    const dbUserId = target === "USER" ? userId : target === "ADMINS" ? "admins" : "all";
+    const notificationPayload = {
+      userId: dbUserId,
+      title,
+      message,
+      type: type || "INFO",
+      isRead: false,
+      timestamp: new Date().toISOString(),
+    };
+
+    const notification = await NotifyRepo.create(notificationPayload);
+
+    if (this.eventBus) {
+      this.eventBus.publish("notification.send", {
+        target,
+        userId,
+        payload: notificationPayload,
+      });
+    }
+
+    return notification;
+  }
+
   getUserNotifications(userId, query) {
     const filters = {};
     if (query.unreadOnly === "true") filters.isRead = false;
@@ -44,7 +81,7 @@ class NotifyService {
   }
 
 
- // ================= PRIVATE METHODS =================
+ // ================= METHODS =================
 
   _listenUserCreatedEvents() {
     if (!this.eventBus) return;
@@ -57,8 +94,8 @@ class NotifyService {
         if (!userId) return;
 
         const notificationPayload = {
-          title: "Chào mừng!",
-          message: `Chào mừng ${fullName || "người dùng"} đã đăng ký.`,
+          title: `Chào mừng ${fullName || "bạn"} đến với hệ thống!`,
+          message: `Bạn vừa đăng ký tài khoản thành công. Hãy bắt đầu trải nghiệm dịch vụ.`,
           type: "USER_CREATED",
           timestamp: new Date().toISOString()
         };

@@ -7,6 +7,8 @@ module.exports = (app) => {
   const bus = app.get("eventBus");
   const controller = new notifyController(bus);
 
+  router.post("/", auth, asyncHandler(controller.createNotification));
+
   router.get("/", auth, asyncHandler(controller.getAll));
 
   router.get("/unread-count", auth, asyncHandler(controller.getUnreadCount));

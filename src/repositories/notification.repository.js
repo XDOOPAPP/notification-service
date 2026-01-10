@@ -6,11 +6,18 @@ class NotificationRepository {
   }
 
   findByUser(userId, filters, options) {
-    return Notification.find({ userId, ...filters })
+    return Notification.find({
+      $or: [
+        { userId: userId },
+        { userId: "all" }  
+      ],
+      ...filters              
+    })
       .sort({ createdAt: -1 })
       .skip(options.skip)
       .limit(options.limit);
   }
+
 
   countUnread(userId) {
     return Notification.countDocuments({

@@ -6,6 +6,12 @@ class NotifyController {
     this.notifyService = new NotifyService(eventBus);
   }
 
+  // [POST] /api/v1/notifications
+  createNotification = async (req, res) => {
+    const notification = await this.notifyService.createNotification(req.body);
+    res.status(201).json(notification);
+  };
+
   // [GET] /api/v1/notifications
   getAll = async (req, res) => {
     const data = await this.notifyService .getUserNotifications(req.user.userId, req.query);
