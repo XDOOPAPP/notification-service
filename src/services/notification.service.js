@@ -10,20 +10,17 @@ class NotifyService {
   }
 
   async createNotification(data) {
-    const { userId, title, message, type, target } = data;
+    const { title, message, type, target } = data;
 
-    const allowedTargets = ["USER", "ADMINS", "ALL"];
+    const allowedTargets = ["ADMINS", "ALL"];
     if (!title || !message || !target) {
       throw new AppError("title, message, target are required", 400);
     }
     if (!allowedTargets.includes(target)) {
       throw new AppError("Invalid target", 400);
     }
-    if (target === "USER" && !userId) {
-      throw new AppError("userId is required when target = USER", 400);
-    }
 
-    const dbUserId = target === "USER" ? userId : target === "ADMINS" ? "admins" : "all";
+    const dbUserId = target === "ADMINS" ? "admins" : "all";
     const notificationPayload = {
       userId: dbUserId,
       title,
@@ -38,7 +35,7 @@ class NotifyService {
     if (this.eventBus) {
       this.eventBus.publish("notification.send", {
         target,
-        userId,
+        userId: dbUserId,
         payload: notificationPayload,
       });
     }
@@ -52,13 +49,13 @@ class NotifyService {
 
     const page = Number(query.page || 1);
     const limit = Number(query.limit || 10);
-    
+
     if (role === "ADMIN") {
       return NotifyRepo.findByAdmin(filters, {
         skip: (page - 1) * limit,
         limit,
       });
-    } 
+    }
     return NotifyRepo.findByUser(userId, filters, {
       skip: (page - 1) * limit,
       limit,
@@ -66,28 +63,28 @@ class NotifyService {
   }
 
   countUnread(userId, role) {
-    return NotifyRepo.countUnread(userId, role === "ADMIN"? true : false);
+    return NotifyRepo.countUnread(userId, role === "ADMIN" ? true : false);
   }
 
   markRead(id, userId, role) {
-    return NotifyRepo.markRead(id, userId, role === "ADMIN"? true : false);
+    return NotifyRepo.markRead(id, userId, role === "ADMIN" ? true : false);
   }
 
 
   markAllRead(userId, role) {
-    return NotifyRepo.markAllRead(userId, role === "ADMIN"? true : false);
+    return NotifyRepo.markAllRead(userId, role === "ADMIN" ? true : false);
   }
 
   deleteOne(id, userId, role) {
-    return NotifyRepo.deleteOne(id, userId, role === "ADMIN"? true : false);
+    return NotifyRepo.deleteOne(id, userId, role === "ADMIN" ? true : false);
   }
 
   deleteAll(userId, role) {
-    return NotifyRepo.deleteAll(userId, role === "ADMIN"? true : false);
+    return NotifyRepo.deleteAll(userId, role === "ADMIN" ? true : false);
   }
 
 
- // ================= METHODS =================
+  // ================= METHODS =================
 
   _listenUserCreatedEvents() {
     if (!this.eventBus) return;
@@ -95,7 +92,7 @@ class NotifyService {
     // Event USER_CREATED
     this.eventBus.subscribe("USER_CREATED", async (payload) => {
       try {
-        const { userId, fullName} = payload;
+        const { userId, fullName } = payload;
 
         if (!userId) return;
 

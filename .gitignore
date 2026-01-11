@@ -28,7 +28,6 @@ build/
 coverage/
 
 # Docker
-.dockerignore
 docker-data/
 mongo-data/
 

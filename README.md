@@ -18,7 +18,7 @@ Microservice chịu trách nhiệm quản lý và gửi thông báo cho người
     - **Events Phát Đi**:
         - `notification.send`: Event internal để có thể tích hợp với Socket Gateway
 - **Phân Quyền**:
-    - Hỗ trợ target `USER`, `ADMINS`, hoặc `ALL`.
+    - Hỗ trợ target `ADMINS`, hoặc `ALL`.
 
 ## 🛠️ Tech Stack
 
