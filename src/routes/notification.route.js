@@ -21,5 +21,12 @@ module.exports = (app) => {
 
   router.delete("/", auth, asyncHandler(controller.deleteAll));
 
+  router.get("/health", (req, res) => {
+    res.status(200).json({
+      status: "ok",
+      service: "notification-service"
+    });
+  });
+
   return router;
 }
