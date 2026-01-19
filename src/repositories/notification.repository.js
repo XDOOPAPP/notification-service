@@ -1,6 +1,23 @@
 const Notification = require("../models/notification.model");
+const NotificationFcmToken = require("../models/notificationFcmToken.model");
 
 class NotificationRepository {
+  saveFcmToken(userId, fcmToken, role) {
+    return NotificationFcmToken.findOneAndUpdate(
+      { userId },
+      { fcmToken, role },
+      { upsert: true, new: true }
+    );
+  }
+
+  getAllFCMTokens() {
+    return NotificationFcmToken.find({}).select("fcmToken").lean();
+  }
+
+  getAdminFCMTokens() {
+    return NotificationFcmToken.find({ role: "ADMIN" }).select("fcmToken").lean();
+  }
+
   create(data) {
     return Notification.create(data);
   }

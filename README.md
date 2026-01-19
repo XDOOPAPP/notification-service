@@ -103,8 +103,7 @@ x-user-id: admin-id-123
   "title": "Bảo trì hệ thống",
   "message": "Hệ thống sẽ bảo trì vào 12:00 hôm nay.",
   "type": "SYSTEM",
-  "target": "USER",
-  "userId": "user-id-123"
+  "target": "USER"
 }
 ```
 

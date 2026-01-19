@@ -1,5 +1,6 @@
 const NotifyRepo = require("../repositories/notification.repository");
 const AppError = require("../utils/appError");
+const FCMService = require("./fcm.service");
 
 class NotifyService {
   constructor(eventBus) {
@@ -7,6 +8,7 @@ class NotifyService {
     this._listenUserCreatedEvents();
     this._listenPaymentEvents();
     this._listenSubscriptionExpired();
+    this._listenUserFcmToken();
   }
 
   async createNotification(data) {
@@ -32,12 +34,14 @@ class NotifyService {
 
     const notification = await NotifyRepo.create(notificationPayload);
 
-    if (this.eventBus) {
-      this.eventBus.publish("notification.send", {
-        target,
-        userId: dbUserId,
-        payload: notificationPayload,
-      });
+    if (target === "ALL") {
+      const tokens = await NotifyRepo.getAllFCMTokens();
+      await FCMService.sendToMany(tokens, notification);
+    }
+
+    if (target === "ADMINS") {
+      const tokens = await NotifyRepo.getAdminFCMTokens();
+      await FCMService.sendToMany(tokens, notification);
     }
 
     return notification;
@@ -255,6 +259,14 @@ class NotifyService {
       } catch (err) {
         console.error("❌ Error sending SUBSCRIPTION_EXPIRED notification:", err);
       }
+    });
+  }
+
+  _listenUserFcmToken() {
+    if (!this.eventBus) return;
+
+    this.eventBus.subscribe("FCM_TOKEN_UPDATED", async ({ userId, token, role }) => {
+      await NotifyRepo.saveFcmToken(userId, token, role);
     });
   }
 
