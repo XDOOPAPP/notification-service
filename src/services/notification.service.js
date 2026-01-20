@@ -9,6 +9,7 @@ class NotifyService {
     this._listenPaymentEvents();
     this._listenSubscriptionExpired();
     this._listenUserFcmToken();
+    this._listenBlogEvents();
   }
 
   async createNotification(data) {
@@ -262,11 +263,106 @@ class NotifyService {
     });
   }
 
+  _l
+
   _listenUserFcmToken() {
     if (!this.eventBus) return;
 
     this.eventBus.subscribe("FCM_TOKEN_UPDATED", async ({ userId, token, role }) => {
       await NotifyRepo.saveFcmToken(userId, token, role);
+    });
+  }
+
+  _listenBlogEvents() {
+    if (!this.eventBus) return;
+
+    // BLOG_SUBMITTED -> Notify Admins
+    this.eventBus.subscribe("BLOG_SUBMITTED", async (payload) => {
+      try {
+        const { blogId, userId, title } = payload;
+        const notificationPayload = {
+          title: "Blog mới cần duyệt",
+          message: `Blog "${title}" vừa được gửi và đang chờ duyệt.`,
+          type: "BLOG_SUBMITTED",
+          timestamp: new Date().toISOString(),
+          metadata: { blogId, authorId: userId }
+        };
+
+        this.eventBus.publish('notification.send', {
+          target: 'ADMINS',
+          payload: notificationPayload
+        });
+
+        await NotifyRepo.create({
+          userId: 'admins',
+          ...notificationPayload,
+          isRead: false
+        });
+
+        console.log(`✅ BLOG_SUBMITTED notification sent to admins for blog:${blogId}`);
+      } catch (err) {
+        console.error("❌ Error sending BLOG_SUBMITTED notification:", err);
+      }
+    });
+
+    // BLOG_APPROVED -> Notify Author
+    this.eventBus.subscribe("BLOG_APPROVED", async (payload) => {
+      try {
+        const { blogId, userId, title } = payload;
+        const notificationPayload = {
+          title: "Blog của bạn đã được duyệt",
+          message: `Blog "${title}" của bạn đã được phê duyệt và công khai.`,
+          type: "BLOG_APPROVED",
+          timestamp: new Date().toISOString(),
+          metadata: { blogId }
+        };
+
+        this.eventBus.publish('notification.send', {
+          target: 'USER',
+          userId,
+          payload: notificationPayload
+        });
+
+        await NotifyRepo.create({
+          userId,
+          ...notificationPayload,
+          isRead: false
+        });
+
+        console.log(`✅ BLOG_APPROVED notification sent to user:${userId} for blog:${blogId}`);
+      } catch (err) {
+        console.error("❌ Error sending BLOG_APPROVED notification:", err);
+      }
+    });
+
+    // BLOG_REJECTED -> Notify Author
+    this.eventBus.subscribe("BLOG_REJECTED", async (payload) => {
+      try {
+        const { blogId, userId, title, rejectionReason } = payload;
+        const notificationPayload = {
+          title: "Blog của bạn bị từ chối",
+          message: `Blog "${title}" của bạn đã bị từ chối. Lý do: ${rejectionReason}`,
+          type: "BLOG_REJECTED",
+          timestamp: new Date().toISOString(),
+          metadata: { blogId, rejectionReason }
+        };
+
+        this.eventBus.publish('notification.send', {
+          target: 'USER',
+          userId,
+          payload: notificationPayload
+        });
+
+        await NotifyRepo.create({
+          userId,
+          ...notificationPayload,
+          isRead: false
+        });
+
+        console.log(`✅ BLOG_REJECTED notification sent to user:${userId} for blog:${blogId}`);
+      } catch (err) {
+        console.error("❌ Error sending BLOG_REJECTED notification:", err);
+      }
     });
   }
 

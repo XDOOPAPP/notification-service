@@ -15,6 +15,9 @@ Microservice chịu trách nhiệm quản lý và gửi thông báo cho người
         - `PAYMENT_SUCCESS`: Thông báo thanh toán thành công (Gửi User).
         - `PAYMENT_FAILED`: Thông báo lỗi thanh toán (Gửi User & Admin).
         - `SUBSCRIPTION_EXPIRED`: Cảnh báo hết hạn gói (Gửi User).
+        - `BLOG_SUBMITTED`: Thông báo blog mới chờ duyệt (Gửi Admin).
+        - `BLOG_APPROVED`: Thông báo blog đã được duyệt (Gửi User).
+        - `BLOG_REJECTED`: Thông báo blog bị từ chối (Gửi User).
     - **Events Phát Đi**:
         - `notification.send`: Event internal để có thể tích hợp với Socket Gateway
 - **Phân Quyền**:
@@ -238,6 +241,43 @@ Service tự động lắng nghe và tạo thông báo khi các event sau đư�
   "paymentRef": "PAY_FAILED_01"
 }
 // -> Tạo noti báo lỗi thanh toán cho user_123 và admin
+```
+
+#### Event: BLOG_SUBMITTED
+```json
+// Exchange: domain_events
+// Routing Key: BLOG_SUBMITTED
+{
+  "blogId": "blog_001",
+  "userId": "author_123",
+  "title": "Hướng dẫn học NestJS"
+}
+// -> Tạo noti cho admin: "Blog mới cần duyệt"
+```
+
+#### Event: BLOG_APPROVED
+```json
+// Exchange: domain_events
+// Routing Key: BLOG_APPROVED
+{
+  "blogId": "blog_001",
+  "userId": "author_123",
+  "title": "Hướng dẫn học NestJS"
+}
+// -> Tạo noti cho author_123: "Blog của bạn đã được duyệt"
+```
+
+#### Event: BLOG_REJECTED
+```json
+// Exchange: domain_events
+// Routing Key: BLOG_REJECTED
+{
+  "blogId": "blog_001",
+  "userId": "author_123",
+  "title": "Hướng dẫn học NestJS",
+  "rejectionReason": "Nội dung chưa đạt yêu cầu"
+}
+// -> Tạo noti cho author_123: "Blog của bạn bị từ chối"
 ```
 
 ## 🏗️ Cấu Trúc Project

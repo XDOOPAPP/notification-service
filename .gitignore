@@ -34,3 +34,6 @@ mongo-data/
 # Temporary files
 tmp/
 temp/
+
+# Firebase
+firebase-service-account.json
