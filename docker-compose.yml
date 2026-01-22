@@ -7,10 +7,12 @@ services:
     ports:
       - "3006:3006"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PORT=3006
       - MONGO_URL=mongodb://fepa:fepa123@fepa-mongodb:27017/fepa_notification?authSource=admin
       - RABBITMQ_URL=amqp://fepa:fepa123@fepa-rabbitmq:5672
+      - JWT_SECRET=${JWT_SECRET:-fepa-key}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-24h}
 
     networks:
       - fepa-network

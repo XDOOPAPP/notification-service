@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/XDOOPAPP/payment-service.git"
+    "url": "git+https://github.com/XDOOPAPP/notification-service.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/XDOOPAPP/payment-service/issues"
+    "url": "https://github.com/XDOOPAPP/notification-service/issues"
   },
-  "homepage": "https://github.com/XDOOPAPP/payment-service#readme",
+  "homepage": "https://github.com/XDOOPAPP/notification-service#readme",
   "description": "",
   "dependencies": {
     "amqplib": "^0.10.9",
