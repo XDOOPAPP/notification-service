@@ -2,7 +2,7 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 
 # Production stage
@@ -19,10 +19,10 @@ RUN addgroup -g 1001 -S nodejs \
   && adduser -S nodejs -u 1001
 USER nodejs
 
-EXPOSE 3005
+EXPOSE 3006
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:3005/api/v1/subscriptions/health || exit 1
+  CMD curl -f http://localhost:3006/api/v1/notifications/health || exit 1
 
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["npm", "start"]
