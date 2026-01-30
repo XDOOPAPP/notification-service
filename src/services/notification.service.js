@@ -108,11 +108,10 @@ class NotifyService {
           timestamp: new Date().toISOString()
         };
 
-        this.eventBus.publish('notification.send', {
-          target: 'USER',
-          userId: userId,
-          payload: notificationPayload
-        });
+        const userToken = await NotifyRepo.getUserFCMToken(userId);
+        if (userToken && userToken.fcmToken) {
+          await FCMService.sendToToken(userToken.fcmToken, notificationPayload);
+        }
 
         await NotifyRepo.create({
           userId,
@@ -162,11 +161,10 @@ class NotifyService {
           timestamp: new Date().toISOString()
         };
 
-        this.eventBus.publish('notification.send', {
-          target: 'USER',
-          userId,
-          payload: notificationPayload
-        });
+        const userToken = await NotifyRepo.getUserFCMToken(userId);
+        if (userToken && userToken.fcmToken) {
+          await FCMService.sendToToken(userToken.fcmToken, notificationPayload);
+        }
 
         await NotifyRepo.create({
           userId,
@@ -193,11 +191,10 @@ class NotifyService {
           timestamp: new Date().toISOString()
         };
 
-        this.eventBus.publish('notification.send', {
-          target: 'USER',
-          userId,
-          payload: notificationPayload
-        });
+        const userToken = await NotifyRepo.getUserFCMToken(userId);
+        if (userToken && userToken.fcmToken) {
+          await FCMService.sendToToken(userToken.fcmToken, notificationPayload);
+        }
 
         await NotifyRepo.create({
           userId,
@@ -250,11 +247,10 @@ class NotifyService {
           isRead: false
         });
 
-        this.eventBus.publish('notification.send', {
-          target: 'USER',
-          userId,
-          payload: notificationPayload
-        });
+        const userToken = await NotifyRepo.getUserFCMToken(userId);
+        if (userToken && userToken.fcmToken) {
+          await FCMService.sendToToken(userToken.fcmToken, notificationPayload);
+        }
 
         console.log(`✅ SUBSCRIPTION_EXPIRED notification sent to user:${userId}`);
       } catch (err) {
@@ -317,11 +313,10 @@ class NotifyService {
           metadata: { blogId }
         };
 
-        this.eventBus.publish('notification.send', {
-          target: 'USER',
-          userId,
-          payload: notificationPayload
-        });
+        const userToken = await NotifyRepo.getUserFCMToken(userId);
+        if (userToken && userToken.fcmToken) {
+          await FCMService.sendToToken(userToken.fcmToken, notificationPayload);
+        }
 
         await NotifyRepo.create({
           userId,
@@ -347,11 +342,10 @@ class NotifyService {
           metadata: { blogId, rejectionReason }
         };
 
-        this.eventBus.publish('notification.send', {
-          target: 'USER',
-          userId,
-          payload: notificationPayload
-        });
+        const userToken = await NotifyRepo.getUserFCMToken(userId);
+        if (userToken && userToken.fcmToken) {
+          await FCMService.sendToToken(userToken.fcmToken, notificationPayload);
+        }
 
         await NotifyRepo.create({
           userId,

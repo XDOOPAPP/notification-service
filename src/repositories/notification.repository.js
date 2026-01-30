@@ -18,6 +18,11 @@ class NotificationRepository {
     return NotificationFcmToken.find({ role: "ADMIN" }).select("fcmToken").lean();
   }
 
+  getUserFCMToken(userId) {
+    return NotificationFcmToken.findOne({ userId }).select("fcmToken").lean();
+  }
+
+
   create(data) {
     return Notification.create(data);
   }
